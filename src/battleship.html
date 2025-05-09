@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Battleship Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="battleship.css">
+  </head>
+<body>
+
+  <div class="container mt-4">
+    <h2 class="text-center">Battleship Game</h2>
+
+    <div class="row mt-4">
+      <div class="col-md-6 text-center">
+        <h5>Your Board</h5>
+        <div id="player-board" class="board"></div>
+      </div>  
+      <div class="col-md-6 text-center">
+        <h5>Enemy Board</h5>
+        <div id="computer-board" class="board"></div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col text-center">
+        <div id="game-status" class="alert alert-info">Place your ships to begin</div>
+        <button id="start-button" class="btn btn-primary m-2">Start Game</button>
+        <!-- <button id="reset-button" class="btn btn-secondary m-2">Reset Game</button> -->
+      </div>
+    </div>
+    <div style="text-align: center;">
+    This code is a pure HTML file for a Battleship game. 
+    It is only a demonstration of the HTML structure and does not include any game logic or functionality.
+    Enjoy... 
+    </div>  
+  </div>
+
+  <script src="battleship.js"></script>
+
+</body>
+</html>

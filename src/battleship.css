@@ -1,0 +1,36 @@
+.board {
+    display: grid;
+    grid-template-columns: repeat(10, 35px);
+    grid-template-rows: repeat(10, 35px);
+    gap: 2px;
+    justify-content: center;
+    margin-top: 10px;
+  }
+
+  .cell {
+    width: 34px;
+    height: 34px;
+    background-color: #a4adf0;
+    border: 1px solid #000029;
+    cursor: pointer;
+  }
+
+  .cell:hover {
+    background-color: #8591e9;
+  }
+
+  .ship {
+    background-color: #0e2583 !important;
+  }
+
+  .hit {
+    background-color: rgb(186, 40, 7) !important;
+  }
+
+  .hitonme {
+    background-color: #a4adf0;
+  }
+
+  .miss {
+    background-color: lightgray !important;
+  }
