@@ -1,3 +1,4 @@
+/* Styles for the game board container */
 .board {
     display: grid;
     grid-template-columns: repeat(10, 35px);
@@ -7,6 +8,7 @@
     margin-top: 10px;
   }
 
+  /* Styles for individual cells on the board */
   .cell {
     width: 34px;
     height: 34px;
@@ -15,22 +17,27 @@
     cursor: pointer;
   }
 
+  /* Styles for a cell when the mouse hovers over it */
   .cell:hover {
     background-color: #8591e9;
   }
 
+  /* Styles for a cell occupied by a ship */
   .ship {
     background-color: #0e2583 !important;
   }
 
+  /* Styles for a cell that has been hit (enemy ship) */
   .hit {
     background-color: rgb(186, 40, 7) !important;
   }
 
+  /* Styles for a cell on the player's own board that has been hit */
   .hitonme {
     background-color: #a4adf0;
   }
 
+  /* Styles for a cell that has been missed */
   .miss {
     background-color: lightgray !important;
   }
