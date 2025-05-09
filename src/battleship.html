@@ -16,18 +16,18 @@
 
     <div class="row mt-4">
       <div class="col-md-6 text-center">
-        <h5>Your Board</h5>
-        <div id="player-board" class="board"></div>
+        <h5 id="player-board-heading">Your Board</h5>
+        <div id="player-board" class="board" role="grid" aria-labelledby="player-board-heading"></div>
       </div>  
       <div class="col-md-6 text-center">
-        <h5>Enemy Board</h5>
-        <div id="computer-board" class="board"></div>
+        <h5 id="computer-board-heading">Enemy Board</h5>
+        <div id="computer-board" class="board" role="grid" aria-labelledby="computer-board-heading"></div>
       </div>
     </div>
 
     <div class="row mt-3">
       <div class="col text-center">
-        <div id="game-status" class="alert alert-info">Place your ships to begin</div>
+        <div id="game-status" class="alert alert-info" role="alert">Place your ships to begin</div>
         <button id="start-button" class="btn btn-primary m-2">Start Game</button>
         <!-- <button id="reset-button" class="btn btn-secondary m-2">Reset Game</button> -->
       </div>

@@ -1,5 +1,18 @@
-/**
- */
+// Copyright (C) 2025 Attila Gallai <attila@tux-net.hu>
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 const playerBoard   = document.getElementById('player-board');
 const computerBoard = document.getElementById('computer-board');
 const startButton   = document.getElementById('start-button');
@@ -26,7 +39,20 @@ const ROT_270 = 3;
 let nextRandIndex = 0;
 
 
-// Create BOARD_WIDTX x BOARD_HEIGHT board and return the cell list
+/**
+ * Creates a visual game board in the DOM and populates the given cellsArray.
+ *
+ * This function clears the provided boardElement and fills it with BOARD_SIZE cell divs.
+ * For each cell, it checks the corresponding state in boardElement.cellsArray:
+ *   - If the cell contains a ship (CELL_STATE.SHIP), it adds the 'ship' class for playerCells,
+ *     and increments the shipsCount.
+ *   - Sets the cell's data-index attribute and appends it to the boardElement.
+ *   - Adds the cell to the cellsArray.
+ *
+ * @param {HTMLElement} boardElement - The DOM element representing the board container.
+ * @param {Array} cellsArray - The array to populate with created cell elements.
+ * @returns {number} shipsCount - The number of ship cells on the board.
+ */
 function createBoard(boardElement, cellsArray) {
   let shipsCount = 0;
   boardElement.innerHTML = "";
@@ -51,6 +77,13 @@ function createBoard(boardElement, cellsArray) {
 }
 
 
+/**
+ * Randomizes the order of cell indices in the randomPositions array.
+ *
+ * This function fills the randomPositions array with sequential numbers from 0 to BOARD_SIZE - 1,
+ * then shuffles the array by swapping random pairs of elements 1000 times.
+ * The result is a randomized sequence of board cell indices, used for random ship placement.
+ */
 function shuffleRandomPositions() {
   // fill up the randomPositions array with numbers from 0 to BOARD_SIZE - 1
   nextRandIndex = 0;
@@ -72,7 +105,17 @@ function shuffleRandomPositions() {
 }
 
 
-// define enums for shioptypes
+/**
+ * Enum-like object representing the different ship types in the game.
+ *
+ * Each property corresponds to a unique ship type, mapped to a numeric value:
+ *   - SHIP_1: Single-cell ship (value 0)
+ *   - SHIP_2: Two-cell ship (value 1)
+ *   - SHIP_3: Large ship (value 2)
+ *   - SHIP_4: Four-cell ship (value 3)
+ *
+ * This object is used to identify and reference ship types throughout the codebase.
+ */
 const SHIP_TYPE = {
   SHIP_1: 0,
   SHIP_2: 1,
@@ -81,6 +124,15 @@ const SHIP_TYPE = {
 };
 
 
+/**
+ * Enum-like object mapping rotation degrees to their corresponding index values.
+ *
+ * Used to convert rotation angles (0, 90, 180, 270 degrees) to indices for accessing
+ * ship rotation variants in ship definitions.
+ *
+ * Example:
+ *   ROTATION_VALUE[90] === 1
+ */
 const ROTATION_VALUE = {
     0: 0,
    90: 1,
@@ -89,8 +141,15 @@ const ROTATION_VALUE = {
 };
 
 
-// State of the cells
-const CELL_STATE = {
+/**
+ * Enum-like object representing the possible states of a board cell.
+ *
+ * Properties:
+ *   - EMPTY: The cell is empty (value 0)
+ *   - SHIP:  The cell contains part of a ship (value 1)
+ *   - HIT:   The cell has been hit and contained a ship (value 2)
+ *   - MISS:  The cell has been shot at and was empty (value 3)
+ */const CELL_STATE = {
   EMPTY:  0,
   SHIP:   1,
   HIT:    2,
@@ -98,7 +157,21 @@ const CELL_STATE = {
 };
 
 
-// Define a ship type with 1x1 size
+/**
+ * Object representing the single-cell ship type (SHIP_1).
+ *
+ * Properties:
+ *   - stype:   The ship type identifier (from SHIP_TYPE.SHIP_1).
+ *   - size:    The number of cells this ship occupies (1).
+ *   - count:   The number of ships of this type to place on the board (3).
+ *   - posx:    The x-coordinate of the ship's position (default -1, used for placement).
+ *   - posy:    The y-coordinate of the ship's position (default -1, used for placement).
+ *   - ship_rots: An array of rotation variants for the ship. Each variant is an object with:
+ *       - width:  Width of the ship in this rotation.
+ *       - height: Height of the ship in this rotation.
+ *       - shape:  Array representing the ship's shape mask (1 = occupied, 0 = empty).
+ *     For SHIP_1, all rotations are identical (single cell).
+ */
 const SHIP_1 = {
    stype:  SHIP_TYPE.SHIP_1,
     size:  1,
@@ -114,7 +187,21 @@ const SHIP_1 = {
   };
 
 
-// Define a ship type with 2x1 size
+  /**
+ * Object representing the two-cell ship type (SHIP_2).
+ *
+ * Properties:
+ *   - stype:     The ship type identifier (from SHIP_TYPE.SHIP_2).
+ *   - size:      The number of cells this ship occupies (2).
+ *   - count:     The number of ships of this type to place on the board (2).
+ *   - posx:      The x-coordinate of the ship's position (default -1, used for placement).
+ *   - posy:      The y-coordinate of the ship's position (default -1, used for placement).
+ *   - ship_rots: An array of rotation variants for the ship. Each variant is an object with:
+ *       - width:  Width of the ship in this rotation.
+ *       - height: Height of the ship in this rotation.
+ *       - shape:  Array representing the ship's shape mask (1 = occupied, 0 = empty).
+ *     For SHIP_2, the ship can be horizontal or vertical.
+ */
 const SHIP_2 = {
    stype:  SHIP_TYPE.SHIP_2,
     size:  2,
@@ -130,8 +217,21 @@ const SHIP_2 = {
 };
 
 
-// Define a ship type with 4x3 size
-const SHIP_3 = {
+/**
+ * Object representing the large ship type (SHIP_3), with a complex 4x3 or 3x4 shape.
+ *
+ * Properties:
+ *   - stype:     The ship type identifier (from SHIP_TYPE.SHIP_3).
+ *   - size:      The number of cells this ship occupies (12).
+ *   - count:     The number of ships of this type to place on the board (2).
+ *   - posx:      The x-coordinate of the ship's position (default -1, used for placement).
+ *   - posy:      The y-coordinate of the ship's position (default -1, used for placement).
+ *   - ship_rots: An array of rotation variants for the ship. Each variant is an object with:
+ *       - width:  Width of the ship in this rotation.
+ *       - height: Height of the ship in this rotation.
+ *       - shape:  Array representing the ship's shape mask (1 = occupied, 0 = empty).
+ *     For SHIP_3, the shape is more complex and varies by rotation.
+ */const SHIP_3 = {
    stype:  SHIP_TYPE.SHIP_3,
     size:  12,
    count:  2,
@@ -146,7 +246,21 @@ const SHIP_3 = {
 };
 
 
-// Define a ship type with 4x1 size
+/**
+ * Object representing the four-cell ship type (SHIP_4).
+ *
+ * Properties:
+ *   - stype:   The ship type identifier (from SHIP_TYPE.SHIP_4).
+ *   - size:    The number of cells this ship occupies (4).
+ *   - count:   The number of ships of this type to place on the board (1).
+ *   - posx:    The x-coordinate of the ship's position (default -1, used for placement).
+ *   - posy:    The y-coordinate of the ship's position (default -1, used for placement).
+ *   - ship_rots: An array of rotation variants for the ship. Each variant is an object with:
+ *       - width:  Width of the ship in this rotation.
+ *       - height: Height of the ship in this rotation.
+ *       - shape:  Array representing the ship's shape mask (1 = occupied, 0 = empty).
+ *     For SHIP_4, the ship can be horizontal or vertical (rotations 0/180 and 90/270).
+ */
 const SHIP_4 = {
    stype:  SHIP_TYPE.SHIP_4,
     size:  4,
@@ -165,8 +279,20 @@ const SHIP_4 = {
 const SHIP_TYPES = [ SHIP_1, SHIP_2, SHIP_3, SHIP_4 ];
 
 
-// This is an object that describe how many ships of each type are to be placed on the board 
-// It is used to keep track of the number of ships left to place
+/**
+ * Temporary ship build table object.
+ *
+ * This object holds the initial count of each ship type (from SHIP_1 to SHIP_4)
+ * as defined in their respective ship objects. It is used as a template to
+ * initialize the ship build table for generating random game boards, ensuring
+ * that the correct number of each ship type is placed.
+ *
+ * Properties:
+ *   - SHIP_4: { count: SHIP_4.count }  // Number of four-cell ships to place
+ *   - SHIP_3: { count: SHIP_3.count }  // Number of large ships to place
+ *   - SHIP_2: { count: SHIP_2.count }  // Number of two-cell ships to place
+ *   - SHIP_1: { count: SHIP_1.count }  // Number of single-cell ships to place
+ */
 const shipBuildtableTemp = {
   SHIP_4: { count: SHIP_4.count},
   SHIP_3: { count: SHIP_3.count},
@@ -175,6 +301,17 @@ const shipBuildtableTemp = {
 }
 
 
+/**
+ * Returns a ship object of the specified type, rotated to the given rotation index.
+ *
+ * This function selects the ship definition based on the provided shipType (stype value),
+ * resets its count property to the default from shipBuildtableTemp, and sets its
+ * 'rotated' property to the rotation variant at rotIndex from the ship's ship_rots array.
+ *
+ * @param {number} shipType - The ship type identifier (from SHIP_TYPE).
+ * @param {number} rotIndex - The rotation index (0-3) corresponding to 0, 90, 180, or 270 degrees.
+ * @returns {Object} The ship object with the 'rotated' property set to the selected rotation.
+ */
 function rotateShip(shipType, rotIndex) {
   let ship = null;
 
@@ -204,6 +341,17 @@ function rotateShip(shipType, rotIndex) {
 }
 
 
+/**
+ * Returns an array of indices representing all valid neighboring cells
+ * (including diagonals) surrounding the specified cell index on the board.
+ *
+ * This function calculates the row and column of the given index, then iterates
+ * through all adjacent positions (8 directions), skipping the cell itself.
+ * Only neighbors within the board boundaries are included.
+ *
+ * @param {number} index - The linear index of the cell (0 to BOARD_SIZE - 1).
+ * @returns {number[]} An array of indices for all valid surrounding cells.
+ */
 function getSurroundingCells(index) {
   const row = Math.floor(index / BOARD_WIDTH);
   const col = index % BOARD_WIDTH;
@@ -226,6 +374,19 @@ function getSurroundingCells(index) {
 }
 
 
+/**
+ * Checks if a ship can be placed at the specified position on the board.
+ *
+ * This function verifies that the ship (with its current rotation) fits within the board boundaries,
+ * does not overlap with any existing ships, and does not touch any adjacent ships (including diagonals).
+ * It iterates over the ship's shape mask, skipping empty cells, and checks each occupied cell for validity.
+ *
+ * @param {Array} cellsArray - The board's cell array, where each cell has a 'state' property.
+ * @param {Object} ship - The ship object, with a 'rotated' property describing its shape, width, and height.
+ * @param {number} objLeft - The leftmost column index (x-coordinate) for the ship's placement.
+ * @param {number} objTop - The topmost row index (y-coordinate) for the ship's placement.
+ * @returns {boolean} True if the ship can be placed at the given position, false otherwise.
+ */
 function checkShipPlacement(cellsArray, ship, objLeft, objTop) {
   // Check if the ship can be placed at the given position
   for (let i = 0; i < ship.rotated.height; i++) {
@@ -251,15 +412,15 @@ function checkShipPlacement(cellsArray, ship, objLeft, objTop) {
 
       // Check for touching (adjacent) cells
       const surroundingCells = getSurroundingCells(cellIndex);
-      if (surroundingCells.length > 0) {
+      // if (surroundingCells.length > 0) {
         for (const neighborIndex of surroundingCells) {
           if (cellsArray[neighborIndex].state === CELL_STATE.SHIP) {
             return false; // Adjacent cell is occupied
           }
         }
-      } else {
-        return false; // No surrounding cells found, invalid placement
-      } 
+      // } else {
+      //   return false; // No surrounding cells found, invalid placement
+      // } 
     } 
   }
 
@@ -267,11 +428,23 @@ function checkShipPlacement(cellsArray, ship, objLeft, objTop) {
 }
       
 
+/**
+ * Attempts to place a ship of the given type at a random valid position and rotation on the board.
+ *
+ * This function selects a random rotation for the ship, then iterates through the shuffled randomPositions array
+ * to find a valid starting cell for placement. It checks if the ship can be placed at the calculated position
+ * using checkShipPlacement. If placement is valid, it marks the corresponding cells as occupied by the ship.
+ * The used random position is cleared to prevent reuse.
+ *
+ * @param {Array} cellsArray - The board's cell array, where each cell has a 'state' property.
+ * @param {Object} shipType - The ship type object (e.g., SHIP_1, SHIP_2, etc.).
+ * @returns {Object|null} The placed ship object if successful, or null if placement failed.
+ */
 function placeShipRandomly(cellsArray, shipType) {
-  dir = Math.random();
+  let dir = Math.random();
   let rotIndex = dir < 0.25 ? ROT_0 : ( dir < 0.5 ? ROT_90 : (dir < 0.75 ? ROT_180 : ROT_270));
 
-  ship = rotateShip(shipType.stype, rotIndex);
+  let ship = rotateShip(shipType.stype, rotIndex);
 
   while (nextRandIndex < BOARD_SIZE) {
     if (randomPositions[nextRandIndex] != -1) 
@@ -305,6 +478,20 @@ function placeShipRandomly(cellsArray, shipType) {
 }
 
 
+/**
+ * Recursively attempts to place all ships on the board according to the build table.
+ *
+ * This function tries to place ships of the specified type (starting with the largest)
+ * by repeatedly calling placeShipRandomly until all ships of that type are placed or
+ * no valid positions remain. When all ships of the current type are placed, it proceeds
+ * to the next smaller ship type. If all ships are placed successfully, it returns true.
+ * If placement fails (no more random positions available), it returns false.
+ *
+ * @param {Array} cellsArray - The board's cell array, where each cell has a 'state' property.
+ * @param {Object} shipBuildtable - An object tracking the remaining count of each ship type to place.
+ * @param {number} shipType - The current ship type to place (e.g., SHIP_4, SHIP_3, etc.).
+ * @returns {boolean} True if all ships are placed successfully, false otherwise.
+ */
 function recursiveBuild(cellsArray, shipBuildtable, shipType){
   let result = false;
   let nextShipType = shipType;
@@ -381,13 +568,23 @@ function recursiveBuild(cellsArray, shipBuildtable, shipType){
 }
 
 
+/**
+ * Generates a new random game board with ships placed according to the rules.
+ *
+ * This function initializes an empty board, creates a fresh ship build table,
+ * shuffles the random positions array, and fills the board with empty cells.
+ * It then attempts to recursively place all ships on the board using recursiveBuild.
+ * Returns the resulting cells array representing the board state.
+ *
+ * @returns {Array} cellsArray - The generated board as an array of cell objects.
+ */
 function generateRandomGameBoard() {
-  cellsArray = [];
+  let cellsArray = [];
 
   // The cells array is an BOARD_WIDTH x BOARD_HEIGHT array of cells.
   // Init shipBuildtable with the number of ships to be placed.
   // create a shipBuildtable object with the number of ships to be placed, not references for the shipBuildtableTemp object
-  shipBuildtable = {
+  let shipBuildtable = {
     SHIP_4: { count: shipBuildtableTemp.SHIP_4.count },
     SHIP_3: { count: shipBuildtableTemp.SHIP_3.count },
     SHIP_2: { count: shipBuildtableTemp.SHIP_2.count },
@@ -406,6 +603,19 @@ function generateRandomGameBoard() {
 }
   
 
+/**
+ * Handles the player's shot on the computer's board.
+ *
+ * This function is triggered when the player clicks a cell on the computer's board.
+ * It checks if the game is active and if it's the player's turn. If the clicked cell
+ * has already been hit or missed, it ignores the click. If the cell contains a ship,
+ * it marks the cell as a hit, updates the board state, and decrements the computer's ship count.
+ * If the cell is empty, it marks it as a miss and updates the board state.
+ * After processing the shot, it ends the player's turn, checks for a win, and if the game is not over,
+ * schedules the computer's turn after a short delay.
+ *
+ * @param {MouseEvent} e - The click event object from the player's action.
+ */
 function handlePlayerShot(e) {
   if (!gameStarted || !playerTurn) return;
 
@@ -429,7 +639,15 @@ function handlePlayerShot(e) {
 }
 
 
-// Random shot strategy
+/**
+ * Handles the computer's turn to shoot at the player's board.
+ *
+ * This function randomly selects a cell index that has not been shot at before.
+ * If the selected cell contains a ship, it marks it as hit, updates the board visually,
+ * decrements the player's ship count, and updates the status message.
+ * If the cell is empty, it marks it as a miss and updates the status message.
+ * After the shot, it sets playerTurn to true and checks for a win condition.
+ */
 function computerTurn() {
   let index;
   do {
@@ -453,6 +671,14 @@ function computerTurn() {
 }
 
 
+/**
+ * Checks if either player has won the game and updates the game status.
+ *
+ * This function checks the remaining ship counts for both the player and the computer.
+ * If the computer's ship count reaches zero, it displays a "You win!" message and ends the game.
+ * If the player's ship count reaches zero, it displays a "You lose!" message and ends the game.
+ * The function updates the statusDiv and sets gameStarted to false when the game ends.
+ */
 function checkWin() {
   // if (computerShips.size === 0) {
   if (computerShipsCount === 0) {
@@ -466,11 +692,23 @@ function checkWin() {
 }
 
 
+/**
+ * Checks if the game is over by verifying if either player has lost all ships.
+ *
+ * @returns {boolean} True if either the computer or player has zero ships left, false otherwise.
+ */
 function gameOver() {
   return computerShipsCount === 0 || playerShipsCount === 0;
 }
 
 
+/**
+ * Resets the game state and board to start a new game.
+ *
+ * This function generates new random boards for both the player and the computer,
+ * resets ship counts, clears previous computer shots, resets turn and game state flags,
+ * updates the status message, and removes any click event listeners from the computer's cells.
+ */
 function resetGame() {
   playerBoard.cellsArray   = generateRandomGameBoard();
   computerBoard.cellsArray = generateRandomGameBoard();
@@ -488,6 +726,13 @@ function resetGame() {
 }
 
 
+// Event listener for the "Start Game" button.
+/**
+ * Starts a new game when the "Start Game" button is clicked.
+ *
+ * This event handler resets the game state, enables click-to-shoot on the computer's board,
+ * updates the status message, and sets the game as started.
+ */
 startButton.addEventListener('click', () => {
   resetGame();
 
@@ -501,7 +746,13 @@ startButton.addEventListener('click', () => {
 });
 
 
-// add a function that run when page loaded and call resetGame()
+// Event listener for the window load event.
+/**
+ * Initializes the game board when the page loads.
+ *
+ * This event handler calls resetGame() to set up the initial game state and boards
+ * as soon as the page is loaded.
+ */
 window.addEventListener('load', () => {
   resetGame();
 });
