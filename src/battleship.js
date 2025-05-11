@@ -19,23 +19,78 @@ const startButton   = document.getElementById('start-button');
 const resetButton   = document.getElementById('reset-button');
 const statusDiv     = document.getElementById('game-status');
 
+/**
+ * playerCells and computerCells are arrays that store references to the DOM elements
+ * representing the individual cells of the player's and computer's game boards, respectively.
+ *
+ * These arrays are populated when the game boards are created using the createBoard function.
+ * Each cell in the array corresponds to a specific position on the board and can be used
+ * to update the visual state of the board (e.g., marking hits, misses, or ships).
+ */
 const playerCells       = [];
 const computerCells     = [];
+/**
+ * randomPositions is an array used to store a shuffled sequence of indices
+ * representing all possible positions on the game board (from 0 to BOARD_SIZE - 1).
+ *
+ * This array is used to randomize the placement of ships on the board, ensuring
+ * that the positions are selected in a non-sequential and unpredictable order.
+ * The shuffleRandomPositions function is responsible for populating and shuffling
+ * this array before it is used for ship placement.
+ */
 const randomPositions   = [];
+/**
+ * computerShipsCount and playerShipsCount are variables that track the number of ships
+ * remaining for the computer and the player, respectively.
+ *
+ * These counts are initialized when the game boards are created using the createBoard function.
+ * Each time a ship is hit and destroyed, the corresponding count is decremented.
+ * The game ends when either computerShipsCount or playerShipsCount reaches zero.
+ */
 let computerShipsCount  = 0;
 let playerShipsCount    = 0;
+// The playerTurn variable indicates whose turn it is to play.
+// If true, it's the player's turn; if false, it's the computer's turn.
 let playerTurn    = true;
+// The gameStarted variable indicates whether the game is currently in progress.
 let gameStarted   = false;
+/**
+ * computerShots is a Set used to keep track of the indices of cells
+ * that the computer has already shot at on the player's board.
+ *
+ * This ensures that the computer does not shoot at the same cell more than once
+ * during its turn. Each time the computer takes a shot, the index of the targeted
+ * cell is added to this Set.
+ */
 let computerShots = new Set();
 
+/**
+ * The game board dimensions are defined by the constants BOARD_WIDTH and BOARD_HEIGHT.
+ * 
+ * BOARD_WIDTH: 10
+ * BOARD_HEIGHT: 10
+ */
 const BOARD_WIDTH  = 10;
 const BOARD_HEIGHT = 10;
+// The total number of cells on the game board is calculated as BOARD_SIZE.
 const BOARD_SIZE  = BOARD_WIDTH * BOARD_HEIGHT;
+/**
+ * The ROT constants represent the four possible rotation states of a ship.
+ * 
+ * ROT_0:     0 degrees (original position)
+ * ROT_90:   90 degrees (clockwise)
+ * ROT_180: 180 degrees (upside down)
+ * ROT_270: 270 degrees (counter-clockwise)
+ */
 const ROT_0   = 0;
 const ROT_90  = 1;
 const ROT_180 = 2;
 const ROT_270 = 3;
-
+/**
+ * The nextRandIndex variable is used to keep track of the next index in the randomPositions array
+ * that should be checked for placing a ship. It starts at 0 and increments as positions are used.
+ * This ensures that the randomPositions array is traversed sequentially after being shuffled.
+ */
 let nextRandIndex = 0;
 
 

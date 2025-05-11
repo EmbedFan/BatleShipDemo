@@ -1,0 +1,62 @@
+@startuml
+title Battleship Game Main Flow
+
+start
+
+:Page Loads;
+:resetGame();
+
+:Wait for "Start Game" button click;
+if ("Start Game" clicked?) then (yes)
+  :resetGame();
+  :Enable click-to-shoot on computer board;
+  :statusDiv = "Game started! Your turn!";
+  :gameStarted = true;
+else (no)
+  stop
+endif
+
+while (gameStarted)
+  if (playerTurn) then (yes)
+    :Player clicks on computer board;
+    if (Cell already hit/miss?) then (yes)
+      :Ignore click;
+    else (no)
+      if (Cell has ship?) then (yes)
+        :Mark as hit;
+        :Update board state;
+        :computerShipsCount--;
+        :statusDiv = "Hit!";
+      else (no)
+        :Mark as miss;
+        :statusDiv = "Miss!";
+      endif
+      :playerTurn = false;
+      :checkWin();
+      if (gameOver()) then (yes)
+        break
+      else (no)
+        :Wait 700ms;
+        :computerTurn();
+      endif
+    endif
+  else (no)
+    :computerTurn();
+    :playerTurn = true;
+    :checkWin();
+    if (gameOver()) then (yes)
+      break
+    endif
+  endif
+endwhile
+
+if (computerShipsCount == 0) then (yes)
+  :statusDiv = "🎉 You win!";
+  :gameStarted = false;
+else if (playerShipsCount == 0) then (yes)
+  :statusDiv = "💥 You lose!";
+  :gameStarted = false;
+endif
+
+stop
+@enduml
