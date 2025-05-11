@@ -9,4 +9,4 @@ For more details about the game implementation, refer to [BattleshipGameJavaScri
 ## Implementation Diagram
 
 Below is a diagram illustrating the implementation structure of the game:
-![Implementation Diagram](./out/battleship.svg)
+![Implementation Diagram](./out/docs/diagrams/src/battleship/battleship.svg)
